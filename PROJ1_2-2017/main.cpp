@@ -8,26 +8,19 @@
 #include <sstream>
 #include <cstdlib>
 #include <iomanip>
+#include "Line.h"
+#include "Shift.h"
+#include "Driver.h"
+#include "Company.h"
+#include "Bus.h"
 using namespace std;
 
-
-void PedirNomeFicheiroLinhas()
-{
-	string FileName;
-	ifstream LinesFile;
-	cout << "Indique o nome do ficheiro de linhas a utilizar (ex : filename.txt) : ";
-	cin.ignore();
-	getline(cin, FileName);
-	LinesFile.open(FileName);
-	if (LinesFile.fail())
+//////////////////////////////////
 
 
-
-}
 
 void InitialMenu()
 {
-
 
 
 
@@ -37,5 +30,33 @@ void InitialMenu()
 
 int main() {
 	
+	string lines, drivers;
+	ifstream LinesFile;
+	ifstream DriversFile;
+	cout << "Indique o ficheiro de Linhas :";
+	getline(cin, lines);
+	LinesFile.open(lines);
+	if (LinesFile.fail())
+	{
+		cerr << "Erro a encontrar ficheiro!";
+		exit(1);
+
+	}
+	LinesFile.close();
+
+	cout << "Indique o ficheiro de condutores :";
+	getline(cin, drivers);
+	DriversFile.open(drivers);
+	if (DriversFile.fail())
+	{
+		cerr << "Erro a encontrar ficheiro!";
+		exit(1);
+
+	}
+	DriversFile.close();
+
+	Empresa object("SEMPRARROLAR", drivers, lines);
+	
+
 	return 0;
 }

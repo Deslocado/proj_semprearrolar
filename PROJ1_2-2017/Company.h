@@ -20,6 +20,8 @@ class Empresa{
 	 Empresa(string nome, string fichCondutores, string fichLinhas);
   // metodos get
   string getNome() const;
+  vector<Line> Empresa::getLines() const;
+  vector<Driver> Empresa::getDrivers() const;
   // metodos set
   // outros metodos
   void distribuiServico(); // funcao que implementa a afectacao de servico

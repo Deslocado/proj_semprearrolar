@@ -29,4 +29,25 @@ class Driver{
 
   // outher methods
 
+  void setId(int i)
+  {
+	  id = i;
+  }
+  void setName(string nameD)
+  {
+	  name = nameD;
+  }
+  void setMaxHours(unsigned int i)
+  {
+	  maxHours = i;
+  }
+  void setMaxWeekHours(unsigned int i)
+  {
+	  maxWeekWorkingTime = i;
+  }
+  void setMinHours(unsigned int i)
+  {
+	  minRestTime = i;
+  }
+
 };

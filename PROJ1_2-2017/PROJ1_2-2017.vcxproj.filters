@@ -35,20 +35,20 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bus.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Company.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Driver.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Shift.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Line.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Shift.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="Driver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Company.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bus.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

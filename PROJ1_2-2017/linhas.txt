@@ -1,0 +1,5 @@
+201 ; 20 ; Paranhos, Monte dos Burgos, Hospital de Sao Joao, ISEP; 10, 65, 15
+207 ; 10 ; Aliados, Galiza, Rotunda da Boavista; 25, 20
+505 ; 30 ; Matosinhos, Sete Bicas, Rotunda dos Produtos Estrela, Senhora da Hora; 40, 30, 45
+506 ; 15 ; Ribeira, Fluvial, Foz, Matosinhos, Feup; 25, 80, 30, 10
+508 ; 10 ; Carmo, Alfandega, Foz; 25, 30
