@@ -12,22 +12,9 @@
 #include <iomanip>
 using namespace std;
 
-void umcout()
-{
-	cout << "ola";
-
-}
 
 
-<<<<<<< Updated upstream
+int main() {
 
-
-int menu()
-=======
-int main()
->>>>>>> Stashed changes
-{
-	cout << "ASD\n";
-
-  return 0;
+	return 0;
 }
