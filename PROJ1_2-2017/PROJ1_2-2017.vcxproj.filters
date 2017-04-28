@@ -15,15 +15,40 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Bus.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Company.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Driver.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Line.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shift.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Bus.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Company.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Driver.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shift.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
