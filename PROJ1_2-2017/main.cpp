@@ -3,8 +3,6 @@
 #include <vector>
 #include <cmath>
 #include <fstream>
-#include <winsock2.h>
-#include <windows.h>
 #include <cctype>
 #include <istream>
 #include <sstream>
@@ -13,8 +11,31 @@
 using namespace std;
 
 
+void PedirNomeFicheiroLinhas()
+{
+	string FileName;
+	ifstream LinesFile;
+	cout << "Indique o nome do ficheiro de linhas a utilizar (ex : filename.txt) : ";
+	cin.ignore();
+	getline(cin, FileName);
+	LinesFile.open(FileName);
+	if (LinesFile.fail())
+
+
+
+}
+
+void InitialMenu()
+{
+
+
+
+
+}
+
+
 
 int main() {
-	cout << "uwehfuw" << endl;
+	
 	return 0;
 }
