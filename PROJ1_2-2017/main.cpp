@@ -24,19 +24,17 @@ using namespace std;
 
 
 
-int homeMenu()
+void homeMenu()
 {
 	//Variable used for reading the user input
 	char option;
 	//Variable used for controlling the while loop
 	bool isRunning = true;
 
-	while (isRunning == true)
-	{
+	
 		//Clears the screen
-		system("cls");        //For UNIX-based OSes
-
-							  //Clears the keyboard buffer
+		system("cls");       
+		//Clears the keyboard buffer
 		fflush(stdin);
 		//Outputs the options to console
 		cout << "    MENU SEMPRARROLAR" << endl;
@@ -47,35 +45,48 @@ int homeMenu()
 			"\n.........."
 			"\n[0]Exit");
 		//Reads the user's option
-		option = getchar();
-		//Selects the course of action specified by the option
-		switch (option)
+		cin >> option;
+		do
 		{
-		case '1':
-			//TO DO CODE
-			break;
-		case '2':
-			//TO DO CODE
-			break;
-		case '3':
-			//TO DO CODE
-			break;
-		case '4':
-			//TO DO CODE
-			break;
-			//...
-		case '0':
-			//Exits the system
-			isRunning = false;
-			return 0;
-		default:
-			//User enters wrong input
-			//TO DO CODE
-			break;
-		}
-	}
+			if (!cin.fail())
+			{
+				switch (option)
+				{
+				case '1':
 
+					system("cls");
+					//func
+					isRunning = false;
+					//TO DO CODE 
+					break;
+				case '2':
+					//TO DO CODE
+					break;
+				case '3':
+					//TO DO CODE
+					break;
+				case '4':
+					//TO DO CODE
+					break;
+					//...
+				case '0':
+					//Exits the system
 
+					return;
+				default:
+					cout << "Input invalido!";
+					cin >> option;
+					break;
+				}
+			}
+			else
+			{
+				cin.clear();
+				cin.ignore(1000, '\n');
+				cout << "Input invalido!";
+				cin >> option;
+			}
+		} while (isRunning);
 }
 
 
