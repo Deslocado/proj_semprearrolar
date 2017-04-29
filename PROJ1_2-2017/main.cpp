@@ -60,12 +60,15 @@ void homeMenu()
 					//TO DO CODE 
 					break;
 				case '2':
+					isRunning = false;
 					//TO DO CODE
 					break;
 				case '3':
+					isRunning = false;
 					//TO DO CODE
 					break;
 				case '4':
+					isRunning = false;
 					//TO DO CODE
 					break;
 					//...
