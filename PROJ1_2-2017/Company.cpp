@@ -10,7 +10,7 @@
 #include <cstdlib>
 #include <iomanip>
 
-Empresa::Empresa(string nome, string fichCondutores, string fichLinhas){
+Company::Company(string nome, string fichCondutores, string fichLinhas){
   
 	ifstream LinesFile;
 	LinesFile.open(fichLinhas);
@@ -37,19 +37,19 @@ Empresa::Empresa(string nome, string fichCondutores, string fichLinhas){
 ////////////////////////////////
 // metodos get
 
-vector<Line> Empresa::getLines() const
+vector<Line> Company::getLines() const
 {
 
 	return linhas;
 
 
 }
-vector<Driver> Empresa::getDrivers() const
+vector<Driver> Company::getDrivers() const
 {
 	return condutores;
 }
 ///////////////////////////////
-string Empresa::getNome() const{
+string Company::getNome() const{
   return nome;
 }
 
@@ -60,5 +60,5 @@ string Empresa::getNome() const{
 ////////////////////////////
 // outros metodos
 ///////////////////////////
-void Empresa::distribuiServico(){
+void Company::distribuiServico(){
 }
