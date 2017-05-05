@@ -20,15 +20,18 @@
 #include <conio.h>
 using namespace std;
 //////////////////////////////////
-void linhasHome();
-void escreveFileLinhas();
-
+void linhasHome(Company &company);
+void escreveFileLinhas(Company &company);
+void coutLines(Company &company);
+void condutoresHome(Company &company);
+void coutCondutores(Company &company);
+void rem_condutor(Company &company);
 
 //////////////////////////////////
 
 
 
-void homeMenu()
+void homeMenu(Company &company)
 {
 	//Variable used for reading the user input
 	char option;
@@ -59,14 +62,14 @@ void homeMenu()
 				case '1':
 
 					system("cls");
-					
+					condutoresHome(company);
 					//func
 					isRunning = false;
 					//TO DO CODE 
 					break;
 				case '2':
 					system("cls");
-					linhasHome();
+					linhasHome(company);
 					isRunning = false;
 					//TO DO CODE
 					break;
@@ -102,12 +105,71 @@ void homeMenu()
 }
 
 //////////////////////////////// LINHAS ////////////////////////////////////////////////
-Company object("SEMPRARROLAR", "condutores.txt", "linhas.txt");
-vector <Line> vectLines = object.getLines();
 
-void escreveFileLinhas()
+
+
+
+void coutLines(Company &company)
 {
-	ofstream adiciona("linhas.txt"); // apartir daqui é um processo de escrita no ficheiro de texto 
+	vector <Line> vectLines = company.getLines();
+	for (unsigned int i = 0; i < vectLines.size(); i++)
+	{
+		cout << "ID : " << vectLines[i].getId() << endl;
+		cout <<"FREQ :" <<vectLines[i].getFreq() << endl;
+		cout << "PARAGENS: " << endl;
+		for (unsigned int u = 0; u < vectLines[i].getBusStops().size(); u++)
+		{
+			if (u == vectLines[i].getBusStops().size() - 1)
+				cout << vectLines[i].getBusStops()[u] << endl;
+			else cout << vectLines[i].getBusStops()[u] << " - ";
+		}
+		cout << "TEMPOS :" << endl;
+		for (unsigned int u = 0; u < vectLines[i].getTimings().size(); u++)
+		{
+			cout << vectLines[i].getTimings()[u] << " min  ";
+		}
+		cout << endl << endl;
+	}
+}
+
+void linhasHome(Company &company) {     //correspondente a opcao 1 do menu
+
+	
+
+	cout << "ID's das linhas disponiveis : " << endl;
+	// utilização do vector do tipo da  sruct LINHA para juntar todas as "linhas" do ficheiro correspondente
+	
+	coutLines(company);
+
+	int o;   // utilizado para guardar a opcao. ( 1 ou 2 )
+	cout << "[1]Detalhes linha existente" << endl;
+	cout << "[2]Criar nova linha" << endl;
+	cout << "[0]Voltar ao menu inicial" << endl << endl;
+	cout << "Escolha a opcao que pretende : ";
+	cin >> o;
+	while (o != 1 && o != 2 && o != 0) // ciclo utilizado para forçar o utilizador a escolher uma opcao valida 
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Opcao invalida , tente de novo : ";
+		cin >> o;
+	}
+	switch (o)
+	{
+	case 1: 
+		
+		break;
+	case 2: 
+		break;
+	case 0: system("cls"); homeMenu(company);
+
+	}
+}
+
+void escreveFileLinhas(Company &company)
+{
+	vector<Line> vectLines = company.getLines();
+	ofstream adiciona(company.getFichLinhas()); // apartir daqui é um processo de escrita no ficheiro de texto 
 	for (unsigned int i = 0; i < vectLines.size(); i++)
 	{
 		adiciona << vectLines[i].getId() << " ; ";
@@ -135,54 +197,40 @@ void escreveFileLinhas()
 	adiciona.close();
 }
 
-void coutLines()
+
+
+
+
+
+
+
+
+//////////////////////////// Condutores ////////////////////////////////////////////////////////
+
+void coutCondutores(Company &company)
 {
-	for (unsigned int i = 0; i < vectLines.size(); i++)
+	vector <Driver> vectDriver = company.getDrivers();
+	for (unsigned int i = 0; i < vectDriver.size(); i++)
 	{
-		cout << "ID : " << vectLines[i].getId() << endl;
-		cout <<"FREQ :" <<vectLines[i].getFreq() << endl;
-		cout << "PARAGENS: " << endl;
-		for (unsigned int u = 0; u < vectLines[i].getBusStops().size(); u++)
-		{
-			if (u == vectLines[i].getBusStops().size() - 1)
-				cout << vectLines[i].getBusStops()[u] << endl;
-			else cout << vectLines[i].getBusStops()[u] << " - ";
-		}
-		cout << "TEMPOS :" << endl;
-		for (unsigned int u = 0; u < vectLines[i].getTimings().size(); u++)
-		{
-			cout << vectLines[i].getTimings()[u] << " min  ";
-		}
+		cout << "ID : " << vectDriver[i].getId() << endl;
+		cout << "Nome :" << vectDriver[i].getName() << endl;
+		cout << "Duracao maxima do turno: " << vectDriver[i].getShiftMaxDuration() << endl;
+		cout << "Numero maximo de horas por semana :" << vectDriver[i].getMaxWeekWorkingTime() << endl;
+		cout << "Numero minimo de horas de descanso : " << vectDriver[i].getMinRestTime() << endl;
 		cout << endl << endl;
-
-
-
 	}
-
-
-
 }
-
-void linhasHome() {     //correspondente a opcao 1 do menu
-
+void condutoresHome(Company &company){
 	
-
-	cout << "ID's das linhas disponiveis : " << endl;
-	// utilização do vector do tipo da  sruct LINHA para juntar todas as "linhas" do ficheiro correspondente
-	
-	coutLines();
-
-
-
-
-
+	coutCondutores(company);
 	int o;   // utilizado para guardar a opcao. ( 1 ou 2 )
-	cout << "[1]Detalhes linha existente" << endl;
-	cout << "[2]Criar nova linha" << endl;
+	cout << "[1]Alterar um condutor" << endl;
+	cout << "[2]Criar um novo condutor" << endl;
+	cout << "[3]Remover um condutor\n";
 	cout << "[0]Voltar ao menu inicial" << endl << endl;
 	cout << "Escolha a opcao que pretende : ";
 	cin >> o;
-	while (o != 1 && o != 2 && o != 0) // ciclo utilizado para forçar o utilizador a escolher uma opcao valida 
+	while (o != 1 && o != 2 && o != 0 && o!=3) // ciclo utilizado para forçar o utilizador a escolher uma opcao valida 
 	{
 		cin.clear();
 		cin.ignore(1000, '\n');
@@ -191,25 +239,75 @@ void linhasHome() {     //correspondente a opcao 1 do menu
 	}
 	switch (o)
 	{
-	case 1: 
-		
+	case 1:
+
 		break;
-	case 2: 
+	case 2:
 		break;
-	case 0: system("cls"); homeMenu();
+	case 3:
+		rem_condutor(company);
+		break;
+	case 0: system("cls"); homeMenu(company);
 
 	}
 }
 
+int ver_idc(int &opc , vector<Driver> vector) {
+	int i = 0;
+	while (i < vector.size()) {
+		if (opc == vector[i].getId()) {
+			return i;
+			break;
+		}
+		i++;
+	}
+	return -1;
+}
 
 
+void rem_condutor(Company &company) {
+	vector<Driver> vectorDrivers = company.getDrivers();
+	int opc;
+	int i;
+	cout << "\nQue condutor pretende remover (escreva o ID respetivo) : "; cin >> opc;
+	while (true) {
+		if (!cin.fail()) {
+			i = ver_idc(opc , vectorDrivers);
+			if (i == -1) {
+				cout << "Id nao encontrado tente novamente : "; cin >> opc;
+			}
+			else {
+				break;
+			}
+		}
+		else {
+			cout << "Tem que ser um inteiro, tenta novamente : ";
+			cin.clear();
+			cin.ignore(INT_MAX, '\n');
+			cin >> opc;
+		}
+	}
+	vectorDrivers.erase(vectorDrivers.begin() + i);
+	company.setCondutores(vectorDrivers);
+	
+	coutCondutores(company);
+	reescrever_c(company);
+}
 
+void reescrever_c(Company &company) {
+	ofstream escreve(company.getFichDrivers);
+	int i = 0;
+	while (i < company.getDrivers().size()) {
+		escreve << company.getDrivers()[i].getId << " ; " << company.getDrivers()[i].getName;
 
-
-
-
-
-
+		escreve << " ; " << company.getDrivers()[i].getShiftMaxDuration() << " ; " << company.getDrivers()[i].getMaxWeekWorkingTime() << " ; " << company.getDrivers()[i].getMinRestTime();
+		if (i != company.getDrivers().size() - 1) {
+			escreve << endl;
+		}
+		i++;
+	}
+	escreve.close();
+}
 
 
 
@@ -270,7 +368,7 @@ int main() {
 
 	Company object("SEMPRARROLAR", drivers, lines);
 	
-	homeMenu();
+	homeMenu(object);
 	
 
 	return 0;

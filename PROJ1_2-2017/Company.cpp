@@ -12,6 +12,9 @@
 
 Company::Company(string nome, string fichCondutores, string fichLinhas){
   
+	this->fichCondutores = fichCondutores;
+	this->fichLinhas = fichLinhas;
+
 	ifstream LinesFile;
 	LinesFile.open(fichLinhas);
 
@@ -37,6 +40,14 @@ Company::Company(string nome, string fichCondutores, string fichLinhas){
 ////////////////////////////////
 // metodos get
 
+string Company::getFichDrivers()
+{
+	return fichCondutores;
+}
+string Company::getFichLinhas()
+{
+	return fichLinhas;
+}
 vector<Line> Company::getLines() const
 {
 
@@ -57,8 +68,10 @@ string Company::getNome() const{
 // metodos set
 /////////////////////////////
 
+
 ////////////////////////////
 // outros metodos
 ///////////////////////////
 void Company::distribuiServico(){
 }
+

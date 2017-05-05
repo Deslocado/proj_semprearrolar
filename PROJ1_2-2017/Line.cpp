@@ -9,6 +9,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <iomanip>
+#include "Company.h"
 
 Line::Line(string textLine){
 
@@ -91,3 +92,4 @@ vector<string> Line::getBusStops() const{
 vector<int> Line::getTimings() const{
   return timesList;
 }
+

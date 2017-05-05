@@ -74,3 +74,6 @@ unsigned int Driver::getMinRestTime() const{
 vector<Shift> Driver::getShifts() const{
   return shifts;
 }
+
+
+

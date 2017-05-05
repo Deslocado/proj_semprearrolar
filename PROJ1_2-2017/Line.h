@@ -5,7 +5,6 @@
 #include <vector>
 
 
-
 using namespace std;
 
 class Line{
@@ -42,5 +41,5 @@ class Line{
 
 
   // other methods
-
+  
 };
