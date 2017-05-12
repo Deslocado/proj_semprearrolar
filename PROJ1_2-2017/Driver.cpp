@@ -47,6 +47,15 @@ Driver::Driver(string textLine){
 	setMinHours(t_r);
 }
 
+
+Driver::Driver(unsigned int id, string nome, unsigned int maxHours, unsigned int maxWeekWorkingTime, unsigned int minRestTime)
+{
+	this->id = id; 
+	name = nome;
+	this->maxHours = maxHours;
+	this->maxWeekWorkingTime = maxWeekWorkingTime;
+	this->minRestTime = minRestTime;
+}
 //////////////
 // get methods
 //////////////

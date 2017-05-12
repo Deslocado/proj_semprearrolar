@@ -19,6 +19,7 @@ class Driver{
   vector<Shift> shifts;         // assigned shifts
  public:
   Driver(string textLine);
+  Driver(unsigned int id, string nome, unsigned int maxHours, unsigned int maxWeekWorkingTime, unsigned int minRestTime);
   // get methods
   unsigned int getId() const;
   string getName() const;

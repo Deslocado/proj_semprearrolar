@@ -36,6 +36,7 @@ void alterarHorasTurno(int id, Company &company);
 void chooseDriver(Company &company);
 void alterarHorasSemana(int id, Company &company);
 void alterarTempoDescanso(int id, Company &company);
+void adicionarCondutor(Company &company);
 //////////////////////////////////
 
 //////////////////////////////////
@@ -151,8 +152,8 @@ void linhasHome(Company &company) {     //correspondente a opcao 1 do menu
 	coutLines(company);
 
 	int o;   // utilizado para guardar a opcao. ( 1 ou 2 )
-	cout << "[1]Detalhes linha existente" << endl;
-	cout << "[2]Criar nova linha" << endl;
+	cout << "[1]Opcao" << endl;
+	cout << "[2]opcao" << endl;
 	cout << "[0]Voltar ao menu inicial" << endl << endl;
 	cout << "Escolha a opcao que pretende : ";
 	cin >> o;
@@ -252,13 +253,13 @@ void condutoresHome(Company &company) {
 	case 1: chooseDriver(company);
 
 		break;
-	case 2:
+	case 2: adicionarCondutor(company);
 		break;
 	case 3:
 		rem_condutor(company);
 		break;
 	case 4: system("cls");
-		trabalhoCondutor(company);
+		
 		break;
 	case 0: system("cls"); homeMenu(company);
 
@@ -455,6 +456,7 @@ void rem_condutor(Company &company) {
 	vectorDrivers.erase(vectorDrivers.begin() + i);
 	company.setCondutores(vectorDrivers);
 	reescreverDriversFile(company);
+	cout << "O condutor foi removido com sucesso!";
 	cout << "\n\n\n\n";
 	condutoresHome(company);
 }
@@ -476,7 +478,65 @@ void reescreverDriversFile(Company &company) {
 	ofFile.close();
 }
 
+void adicionarCondutor(Company &company)
+{
+	vector<Driver> vectorDrivers = company.getDrivers();
+	int voltar;
+	int id, hT, hS, tR;
+	string nome;
+	cout << "ID do novo condutor a adiconar : "; cin >> id;
+	while (cin.fail())
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "ID invalido! :"; cin >> id;
+	}
+	cout << "Horas por turno : "; cin >> hT;
+	while (cin.fail())
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Erro (tente novamente) :"; cin >> hT;
+	}
+	cout << "Horas de trabalho por semana : ";  cin >> hS;
+	while (cin.fail())
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Erro (tente novamente) :"; cin >> hS;
+	}
+	cout << "Horas de descanco : "; cin >> tR; 
+	while (cin.fail())
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Erro (tente novamente) :"; cin >> tR;
+	}
+	cin.ignore(1000, '\n');
+	cout << "Nome do condutor : "; getline(cin, nome);
+	Driver object(id, nome, hT, hS, tR);
+	vectorDrivers.push_back(object);
+	company.setCondutores(vectorDrivers);
+	reescreverDriversFile(company);
 
+	
+	cout << "O novo condutor foi agora adicionado!" << endl;
+	cout << "Prima 0 para voltar para o menu : ";
+	cin >> voltar;
+	while (voltar != 0)
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Prima 0 para voltar para o menu : ";
+		cin >> voltar;
+	}
+	if (voltar == 0)
+	{
+		system("cls");
+		homeMenu(company);
+	}
+
+}
 
 
 
@@ -615,10 +675,70 @@ void horarioLinha(Company &company) // funcao que permite mostrar ao utilizador 
 
 	}
 
-	cout << endl << endl << endl << endl << endl << endl << endl;
+	cout << endl << endl << endl;
+	cout << "Sentido :" << endl;
+	for ( int i = vectorLines[valor].getBusStops().size() - 1; i >= 0; i--) // para escrever o nome das paragens;;
+	{
+		if (i == 0)
+			cout << vectorLines[valor].getBusStops()[i] << endl << endl;
+		else cout << vectorLines[valor].getBusStops()[i] << "--->";
+	}
+	horasaux2 = horaI;
+	horasaux = horaI;
+	for (unsigned int i = 0; i <= vectorLines[valor].getTimings().size() - 1; i++) {
+		minutosaux += vectorLines[valor].getTimings()[i];
+		minutos += vectorLines[valor].getTimings()[i];
+		if (minutosaux >= 60) {
+			horasaux++;
+			horasaux2++;
+			minutosaux -= 60;
+			minutos -= 60;
+		}
+	}
+	for ( int i = vectorLines[valor].getBusStops().size() - 1; i >= 0; i--) // para escrever o nome das paragens;;
+	{
+		cout << vectorLines[valor].getBusStops().size() - i << " Paragem       ";
+	}
+	cout << endl;
+	while (horasaux2 <= 22) // para todas as viagens antes das 23 horas , é mostrado em forma de tabela as horas a que passa em cada paragem 
+	{
+		for (int i = vectorLines[valor].getBusStops().size() - 1; i >= 0; i--)
+		{
+			if (horasaux == 24)
+				horasaux = 0;
+			if (i == vectorLines[valor].getBusStops().size() - 1)
+				cout << setw(2) << setfill('0') << horasaux2 << ":" << setw(2) << setfill('0') << minutosaux << "           "; //formato das horas e minutos utilizando setw e setfill
+			else if (i == 0)
+				cout << setw(2) << setfill('0') << horasaux << ":" << setw(2) << setfill('0') << minutos;
+
+			else  cout << setw(2) << setfill('0') << horasaux << ":" << setw(2) << setfill('0') << minutos << "           ";
+			if (i > 0)
+			{
+				if (minutos + vectorLines[valor].getTimings()[i - 1] >= 60) // quando passa dos 59 min acrescenta 1 hora as horas
+				{
+					horasaux += 1;
+					minutos = minutos + vectorLines[valor].getTimings()[i - 1] - 60;
+				}
+				else minutos += vectorLines[valor].getTimings()[i - 1];
+			}
+		}
+		cout << endl;
+		minutosaux += vectorLines[valor].getFreq();
+
+		if (minutosaux >= 60)
+		{
+			horasaux2 = horasaux2 + 1;
+			minutosaux = minutosaux - 60;
+		}
+		minutos = minutosaux;
+		horasaux = horasaux2;
+
+	}
+
+	cout << endl << endl << endl << endl;
+
 	infoHome(company);
 }
-
 vector<int> linhasMesmaParagem(string s , Company &company) // esta funcao tem como parametro uma string (nome da paragem ) , e vai retornar um vetor 
 {										    // com as linhas que contêm essa paragem;
 

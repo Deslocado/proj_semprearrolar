@@ -1,3 +1,4 @@
 1 ; Antonio Manuel ; 6 ; 35 ; 2
-2 ; Carlos Albertino ; 5 ; 40 ; 12
+2 ; Carlos Albertino ; 5 ; 39 ; 11
 3 ; Pedro Santos ; 10 ; 42 ; 6
+5 ; Carlos Daniel ; 12 ; 40 ; 10
