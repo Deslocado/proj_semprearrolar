@@ -22,22 +22,10 @@ class Line{
   vector<int> getTimings() const;
   // set methods
 
-  void setId(int i)
-  {
-	  id = i;
-	}
-  void setFreq(int i)
-  {
-	  freq = i;
-  }
-  void setBusStops(vector<string> stops)
-  {
-	  busStopList = stops;
-  }
-  void setTimings(vector<int> timings)
-  {
-	  timesList = timings;
-}
+  void setId(unsigned int i);
+  void setFreq(unsigned int i);
+  void setBusStops(vector<string> stops);
+  void setTimings(vector<int> timings);
 
 
   // other methods

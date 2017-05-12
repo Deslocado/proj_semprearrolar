@@ -29,25 +29,10 @@ class Driver{
 
   // outher methods
 
-  void setId(int i)
-  {
-	  id = i;
-  }
-  void setName(string nameD)
-  {
-	  name = nameD;
-  }
-  void setMaxHours(unsigned int i)
-  {
-	  maxHours = i;
-  }
-  void setMaxWeekHours(unsigned int i)
-  {
-	  maxWeekWorkingTime = i;
-  }
-  void setMinHours(unsigned int i)
-  {
-	  minRestTime = i;
-  }
-
+  void setId(unsigned int i);
+  void setName(string name);
+  void setMaxHours(unsigned int i);
+  void setMaxWeekHours(unsigned int i);
+  void setMinHours(unsigned int i);
+  void setShifts(vector <Shift> vector);
 };

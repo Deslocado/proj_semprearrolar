@@ -93,3 +93,23 @@ vector<int> Line::getTimings() const{
   return timesList;
 }
 
+//// set methods /////
+
+void Line::setBusStops(vector<string> stops)
+{
+	busStopList = stops;
+}
+
+void Line::setFreq(unsigned int i)
+{
+	freq = i;
+}
+
+void Line::setId(unsigned int i)
+{
+	id = i;
+}
+void Line::setTimings(vector<int> timings)
+{
+	timesList = timings;
+}

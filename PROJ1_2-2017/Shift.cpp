@@ -2,9 +2,11 @@
 
 Shift::Shift(  unsigned int linha, unsigned int condutor, unsigned int autocarro, unsigned int inicio, unsigned int fim){
   
-  // INITIALISATION CODE GOES IN HERE
-  
-
+	setBusLineId(linha);
+	setDriverId(condutor);
+	setBusOrderNumber(autocarro);
+	setStartTime(inicio);
+	setEndTime(fim);
 }
 
 // metodos get

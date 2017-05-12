@@ -75,5 +75,34 @@ vector<Shift> Driver::getShifts() const{
   return shifts;
 }
 
+///// set methods ////
 
+void Driver::setId(unsigned int i)
+{
+	id = i;
+}
 
+void Driver::setMaxHours(unsigned int i)
+{
+	maxHours = i;
+}
+
+void Driver::setName(string name)
+{
+	this->name = name;
+}
+
+void Driver::setMaxWeekHours(unsigned int i)
+{
+	maxWeekWorkingTime = i;
+}
+
+void Driver::setMinHours(unsigned int i)
+{
+	minRestTime = i;
+}
+
+void Driver::setShifts(vector<Shift> vector)
+{
+	shifts = vector;
+}
