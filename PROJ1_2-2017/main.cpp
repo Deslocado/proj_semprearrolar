@@ -37,6 +37,12 @@ void chooseDriver(Company &company);
 void alterarHorasSemana(int id, Company &company);
 void alterarTempoDescanso(int id, Company &company);
 void adicionarCondutor(Company &company);
+int tempoIdaVolta(Line linha);
+void autocarrosDisplay(Company &company);
+int numeroAutocarrosLinha(int Tempo, Line linha);
+string Maximiza(string s);
+void HorarioParagem(Company &company);
+void percursoDuasParagens(Company &company);
 //////////////////////////////////
 
 //////////////////////////////////
@@ -87,7 +93,8 @@ void homeMenu(Company &company)
 				isRunning = false;
 				//TO DO CODE
 				break;
-			case '4':
+			case '4': system("cls");
+				 autocarrosDisplay(company);
 				isRunning = false;
 				//TO DO CODE
 				break;
@@ -556,7 +563,7 @@ void infoHome(Company &company)    // funcao que serve como base do menu informa
 	cout << "[1]Horario de uma linha" << endl;
 	cout << "[2]Horarios de uma paragem" << endl;
 	cout << "[3]Quais as linhas que passam por determinada paragem" << endl;
-	cout << "[4]Determinar tempo entre duas paragens (apenas na mesma linha)" << endl;
+	cout << "[4]Determinar percurso entre duas quaisquer paragens" << endl;
 	cout << "[0]Voltar ao menu" << endl << endl;
 	cout << "O horario da empresa semprarrolar funciona de segunda a sexta entre as 8h e as 23h." << endl;
 	cout << "Para um melhor funcionamento do programa, os dias sao vistos como intervalos de minutos :" << endl;
@@ -575,11 +582,12 @@ void infoHome(Company &company)    // funcao que serve como base do menu informa
 	{
 	case 1:  horarioLinha(company);
 		break;
-	case 2:
+	case 2: HorarioParagem(company);
 		break;
 	case 3: linhasComParagem(company);
 		break;
-	case 4: 
+	case 4: system("cls");
+		percursoDuasParagens(company);
 		break;
 	case 0: system("cls"); homeMenu(company);
 		break;
@@ -591,7 +599,6 @@ void infoHome(Company &company)    // funcao que serve como base do menu informa
 
 void horarioLinha(Company &company) // funcao que permite mostrar ao utilizador o horario da linha que ele escolheu 
 {
-	cout << "(Para uma melhor visualizacao do horario use tela cheia)" << endl;
 	int id, valor;
 	vector <Line> vectorLines = company.getLines();
 	const int horaI = 8;
@@ -656,8 +663,8 @@ void horarioLinha(Company &company) // funcao que permite mostrar ao utilizador 
 			{
 				if (minutos + vectorLines[valor].getTimings()[i] >= 60) // quando passa dos 59 min acrescenta 1 hora as horas
 				{
-					horasaux += 1;
-					minutos = minutos + vectorLines[valor].getTimings()[i] - 60;
+					horasaux += (minutos + vectorLines[valor].getTimings()[i]) / 60;
+					minutos = (minutos + vectorLines[valor].getTimings()[i]) % 60;
 				}
 				else minutos += vectorLines[valor].getTimings()[i];
 			}
@@ -667,8 +674,8 @@ void horarioLinha(Company &company) // funcao que permite mostrar ao utilizador 
 
 		if (minutosaux >= 60)
 		{
-			horasaux2 = horasaux2 + 1;
-			minutosaux = minutosaux - 60;
+			horasaux2 = horasaux2 + (minutosaux / 60);
+			minutosaux = minutosaux % 60;
 		}
 		minutos = minutosaux;
 		horasaux = horasaux2;
@@ -689,20 +696,20 @@ void horarioLinha(Company &company) // funcao que permite mostrar ao utilizador 
 		minutosaux += vectorLines[valor].getTimings()[i];
 		minutos += vectorLines[valor].getTimings()[i];
 		if (minutosaux >= 60) {
-			horasaux++;
-			horasaux2++;
-			minutosaux -= 60;
-			minutos -= 60;
+			horasaux += minutosaux / 60;
+			horasaux2 += minutosaux / 60;
+			minutosaux = minutosaux % 60;
+			minutos = minutosaux % 60;
 		}
 	}
-	for ( int i = vectorLines[valor].getBusStops().size() - 1; i >= 0; i--) // para escrever o nome das paragens;;
+	for (  int i = vectorLines[valor].getBusStops().size() - 1; i >= 0; i--) // para escrever o nome das paragens;;
 	{
 		cout << vectorLines[valor].getBusStops().size() - i << " Paragem       ";
 	}
 	cout << endl;
 	while (horasaux2 <= 22) // para todas as viagens antes das 23 horas , é mostrado em forma de tabela as horas a que passa em cada paragem 
 	{
-		for (int i = vectorLines[valor].getBusStops().size() - 1; i >= 0; i--)
+		for (  int i = vectorLines[valor].getBusStops().size() - 1; i >= 0; i--)
 		{
 			if (horasaux == 24)
 				horasaux = 0;
@@ -716,8 +723,8 @@ void horarioLinha(Company &company) // funcao que permite mostrar ao utilizador 
 			{
 				if (minutos + vectorLines[valor].getTimings()[i - 1] >= 60) // quando passa dos 59 min acrescenta 1 hora as horas
 				{
-					horasaux += 1;
-					minutos = minutos + vectorLines[valor].getTimings()[i - 1] - 60;
+					horasaux += (minutos + vectorLines[valor].getTimings()[i - 1]) / 60;
+					minutos = (minutos + vectorLines[valor].getTimings()[i - 1]) % 60;
 				}
 				else minutos += vectorLines[valor].getTimings()[i - 1];
 			}
@@ -727,8 +734,8 @@ void horarioLinha(Company &company) // funcao que permite mostrar ao utilizador 
 
 		if (minutosaux >= 60)
 		{
-			horasaux2 = horasaux2 + 1;
-			minutosaux = minutosaux - 60;
+			horasaux2 += minutosaux / 60;
+			minutosaux = minutosaux % 60;
 		}
 		minutos = minutosaux;
 		horasaux = horasaux2;
@@ -739,39 +746,235 @@ void horarioLinha(Company &company) // funcao que permite mostrar ao utilizador 
 
 	infoHome(company);
 }
-vector<int> linhasMesmaParagem(string s , Company &company) // esta funcao tem como parametro uma string (nome da paragem ) , e vai retornar um vetor 
+vector<int> linhasMesmaParagem(string s, Company &company) // esta funcao tem como parametro uma string (nome da paragem ) , e vai retornar um vetor 
 {										    // com as linhas que contêm essa paragem;
-
+	s = Maximiza(s);
+	string paragens;
 	vector <Line> vectorLines = company.getLines();
 	vector<int> v;
 	for (unsigned int i = 0; i < vectorLines.size(); i++) // loop para percorrer todoas as linhas do vetor allLines
 	{
-		for (unsigned int u = 0; u < vectorLines[i].getBusStops().size(); u++)  // loop para percorrer as paragens de uma linha e verficar se 
-			if (vectorLines[i].getBusStops()[u] == s)						   // existe uma correspondencia a paragem associada a s.
+		for (unsigned int u = 0; u < vectorLines[i].getBusStops().size(); u++) {// loop para percorrer as paragens de uma linha e verficar se 
+			paragens = Maximiza(vectorLines[i].getBusStops()[u]);
+			if (paragens == s) {				   // existe uma correspondencia a paragem associada a s.
 				v.push_back(vectorLines[i].getId());
+				v.push_back(u);
+			}
+		}
 	}
 	return v;
+}
+string Maximiza(string s) { // Para colocar todas as letras em maiusculas
+	int ia = 0, n;
+	while (ia < s.size()) {
+		if (s[ia] >= 'a' && s[ia] <= 'z') {
+			n = s[ia] - 'a';
+			s[ia] = n + 'A';
+		}
+		ia++;
+	}
+	return s;
+}
+
+
+
+void HorarioParagem(Company &company) {
+	vector<Line> vectorLines = company.getLines();
+	int t, min, taux, minaux;
+	int i, id, u, ua;
+	string paragem;
+	vector<int> ids;
+	cout << "Digite a paragem que deseja : ";
+	cin.ignore(1000, '\n');
+	getline(cin, paragem);
+	ids = linhasMesmaParagem(paragem, company);
+	if (ids.empty()) {
+		cout << "Nao ha linhas com essa paragem!\n"
+			"Para melhor conhecimento das linhas va a gestao de linhas no menu principal\n\n\n\n";
+		infoHome(company);
+	}
+	system("cls");
+	cout << "PARAGEM  " << Maximiza(paragem) << "\n\n";
+	for (u = 0; u < ids.size(); u++) {
+		id = ids[u];
+		u++;
+		i = ids[u];
+		for (ua = 0; ua < vectorLines.size(); ua++) {
+			if (id == vectorLines[ua].getId()) {
+				break;
+			}
+		}
+		if (i != vectorLines[ua].getBusStops().size() - 1) {
+			cout << id << "---->" << vectorLines[ua].getBusStops()[vectorLines[ua].getBusStops().size() - 1] << endl;
+			t = 8;
+			min = 0;
+			for (unsigned int a = 0; a < i; a++) {
+				min += vectorLines[ua].getTimings()[a];
+			}
+			minaux = 0;
+			taux = 8;
+			while (true) {
+				if ((min / 60) != 0) {
+					t += min / 60;;
+					min = min % 60;
+				}
+				if ((minaux / 60) != 0) {
+					taux += minaux / 60;;
+					minaux = minaux % 60;
+				}
+				if ((taux == 23 && minaux > 0) || (taux > 23)) {
+					break;
+				}
+				if (t >= 24) {
+					t = 0;
+				}
+				cout << setw(2) << setfill('0') << t << ":" << setw(2) << setfill('0') << min << "\t";
+				min += vectorLines[ua].getFreq();
+				minaux += vectorLines[ua].getFreq();
+
+			}
+			cout << endl;
+		}
+		if (i != 0) {
+			cout << id << "---->" << vectorLines[ua].getBusStops()[0] << endl;
+			t = 8;
+			min = 0;
+			for (unsigned int a = 0; a < vectorLines[ua].getTimings().size(); a++) {
+				min += vectorLines[ua].getTimings()[a];
+			}
+			for (unsigned int a = vectorLines[ua].getBusStops().size() - 1; a > i; a--) {
+				min += vectorLines[ua].getTimings()[a - 1];
+			}
+			minaux = 0;
+			taux = 8;
+			while (true) {
+				if ((min / 60) != 0) {
+					t += min / 60;;
+					min = min % 60;
+				}
+				if ((minaux / 60) != 0) {
+					taux += minaux / 60;;
+					minaux = minaux % 60;
+				}
+				if ((taux == 23 && minaux > 0) || (taux > 23)) {
+					break;
+				}
+				if (t >= 24) {
+					t = 0;
+				}
+				cout << setw(2) << setfill('0') << t << ":" << setw(2) << setfill('0') << min << "\t";
+				min += vectorLines[ua].getFreq();
+				minaux += vectorLines[ua].getFreq();
+
+			}
+			cout << endl;
+		}
+	}
+	cout << "\n\n\n";
+	infoHome(company);
 }
 
 void linhasComParagem(Company &company) // funcao que pede ao utilizador uma paragem e escreve o id de todas as linhas que contêm essa paragem
 {
 	string paragem;
-	cout << "Digite a paragem que deseja (tenha atencao a forma como esta escrita a paragem ) : ";
+	cout << "Digite a paragem que deseja : ";
 	cin.ignore(1000, '\n');
 	getline(cin, paragem);
-	vector<int> l = linhasMesmaParagem(paragem , company); // vector que guarda os diferentes ids , usando a funcao linhasMesmaParagem;
+	vector<int> l = linhasMesmaParagem(paragem, company); // vector que guarda os diferentes ids , usando a funcao linhasMesmaParagem;
+	if (l.empty()) {
+		cout << "\nNao ha linhas com essa paragem!\n"
+			"Va ao menu principal e escolha gestao de linhas para melhor conhecimento.";
+		return;
+	}
 	cout << "IDs de todas as linhas que passam pela paragem selecionada : " << endl;
 	for (unsigned int i = 0; i < l.size(); i++) // para fazer cout dos ids contidos no vetor
 	{
 		cout << l[i] << endl;
+		i++;
 	}
-	if (l.empty())
-		cout << "Nao ha linhas com essa paragem!";
-	else cout << endl << "Para conhecer melhor a(s) linha(s) volte ao menu principal e va a 'gestao de linhas'.";
-
 	cout << endl << endl << endl << endl << endl << endl << endl;
 	infoHome(company);
 
+
+}
+
+void percursoDuasParagens(Company &company) //incompleto
+{
+	vector<Line> vectorLines = company.getLines();
+	string paragem1, paragem2;
+	bool existe = false, existe1 = false;
+	int index, index2, indexparagem1, indexparagem2;
+	cout << "Indique o nome da primeira paragem : ";
+	cin.ignore();
+	getline(cin, paragem1);
+	
+	do {
+		paragem1 = Maximiza(paragem1);
+		for (unsigned int i = 0; i < vectorLines.size(); i++)
+		{
+			for (unsigned int u = 0; u < vectorLines[i].getBusStops().size(); u++)
+				if (Maximiza(vectorLines[i].getBusStops()[u]) == paragem1)
+				{
+					index = i;
+					indexparagem1 = u;
+					existe = true;
+				}
+		}
+		if (!existe)
+		{
+			
+			cout << "Erro! Tente uma paragem valida : ";
+			getline(cin, paragem1);
+		}
+	} while (!existe);
+
+	cout << "Indique o nome da segunda paragem : ";
+	cin.ignore();
+	getline(cin, paragem2);
+
+	do {
+		paragem2 = Maximiza(paragem2);
+		for (unsigned int i = 0; i < vectorLines.size(); i++)
+		{
+			for (unsigned int u = 0; u < vectorLines[i].getBusStops().size(); u++)
+				if (Maximiza(vectorLines[i].getBusStops()[u]) == paragem2)
+				{
+					index2 = i;
+					indexparagem2 = u;
+					existe1 = true;
+				}
+		}
+		if (!existe1)
+		{
+
+			cout << "Erro! Tente uma paragem valida : ";
+			getline(cin, paragem2);
+		}
+	} while (!existe1);
+	
+
+	//// Caso as duas paragens estejam na mesma linha ////
+
+	
+	if (index == index2)
+	{
+		cout << "O percurso masi rapido \x82 utilizando a mesma linha no sentido :" << endl;
+		for (unsigned int i = indexparagem1; i <= indexparagem2; i++)
+		{
+			if (i == indexparagem2)
+				cout << vectorLines[index].getBusStops()[i];
+			else cout << vectorLines[index].getBusStops()[i] << "-->";
+		}
+	}
+
+
+
+
+
+
+
+	
+	
 
 }
 
@@ -785,6 +988,42 @@ void linhasComParagem(Company &company) // funcao que pede ao utilizador uma par
 
 
 /////////////////////////////////////////////Autocarros///////////////////////////////////////////////////////////////////
+
+void autocarrosDisplay(Company &company)      //incompleto
+{
+	vector<Line> vectorLines = company.getLines();
+	cout << "--------------- Autocarros SEMPRARROLAR ----------------" << endl;
+	for (unsigned int i = 0; i < vectorLines.size(); i++)
+	{
+		cout << "ID : " <<vectorLines[i].getId() << endl;
+		cout << "Tempo ida e volta : " << tempoIdaVolta(vectorLines[i]) << endl;
+		cout << "Numero de autocarros : " << numeroAutocarrosLinha(tempoIdaVolta(vectorLines[i]), vectorLines[i]) << endl;
+
+
+	}
+
+
+
+
+}
+
+int tempoIdaVolta(Line linha)
+{
+	int total = 0;
+	for (unsigned int i = 0; i < linha.getTimings().size(); i++)
+	{
+		total += linha.getTimings()[i];
+	}
+
+	return (total * 2);
+}
+
+int numeroAutocarrosLinha(int Tempo , Line linha)
+{
+	return (int)((double)Tempo / linha.getFreq() + 1.0);
+
+}
+
 
 
 
