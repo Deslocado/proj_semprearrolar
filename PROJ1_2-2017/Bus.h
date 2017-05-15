@@ -16,11 +16,12 @@ class Bus{
   vector<Shift> schedule;
  public:
   Bus(unsigned int id, unsigned int driver, unsigned int line);
+  Bus(unsigned int order, unsigned int linha);
   // get methods
   unsigned int getBusOrderInLine() const;
   unsigned int getDriverId() const;
   unsigned int getLineId() const;
-  vector<Shift> getSchedule() const;
+  vector<Shift> getSchedule() const; 
   // set methods
   void setBusOrderInLine(unsigned int i);
   void setDriverId(unsigned int i);

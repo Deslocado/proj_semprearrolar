@@ -3,10 +3,16 @@
 
 Bus::  Bus(unsigned int id, unsigned int driver, unsigned int line){
 
-  // INITIALISATION CODE GOES IN HERE
+	orderInLine = id;
+	driverId = driver;
+	lineId = line;
   
 }
 
+Bus::Bus(unsigned int order, unsigned int linha) {
+	lineId = linha;
+	orderInLine = order;
+}
 ////////////////////////////////
 // get methods
 ///////////////////////////////

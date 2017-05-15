@@ -37,6 +37,10 @@ Company::Company(string nome, string fichCondutores, string fichLinhas) {
 
 }
 
+Company::Company(vector<Bus> vector)
+{
+	setAutocarros(vector);
+}
 ////////////////////////////////
 // metodos get
 
@@ -59,6 +63,9 @@ vector<Driver> Company::getDrivers() const
 {
 	return condutores;
 }
+vector<Bus> Company::getAutocarros() const {
+	return autocarros;
+}
 ///////////////////////////////
 string Company::getNome() const {
 	return nome;
@@ -75,6 +82,11 @@ void Company::setCondutores(vector<Driver> vector)
 void Company::setLinhas(vector<Line> vector)
 {
 	linhas = vector;
+}
+
+void Company::setAutocarros(vector<Bus> vector)
+{
+	autocarros = vector;
 }
 ////////////////////////////
 // outros metodos

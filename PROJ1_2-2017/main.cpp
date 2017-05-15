@@ -18,6 +18,7 @@
 #include "Bus.h"
 #include <windows.h>
 #include <conio.h>
+#include <list>
 using namespace std;
 //////////////////////////////////
 void linhasHome(Company &company);
@@ -43,11 +44,37 @@ int numeroAutocarrosLinha(int Tempo, Line linha);
 string Maximiza(string s);
 void HorarioParagem(Company &company);
 void percursoDuasParagens(Company &company);
+void trabalhoCondutor(Company &company);
+void beforeMenu(Company &company);
+void homeMenu(Company &company);
+void menuAtribui(Company &company, unsigned int indice);
+void atribuiTrabalho(Company &company, unsigned int indice);
 //////////////////////////////////
+unsigned int incioTime = 480;
+unsigned int fimTime = 7140;
 
 //////////////////////////////////
+
+void beforeMenu(Company &company)
+{
+	vector<Bus> vectorAutocarros;
+	vector <Line> vectorLines = company.getLines();
+	for (unsigned int i = 0; i < vectorLines.size(); i++) {
+
+		for (unsigned int u = 1; u <= numeroAutocarrosLinha(tempoIdaVolta(vectorLines[i]), vectorLines[i]); u++)
+
+			vectorAutocarros.push_back(Bus(u, vectorLines[i].getId()));
+
+	}
+	company.setAutocarros(vectorAutocarros);
+	homeMenu(company);
+}
 void homeMenu(Company &company)
 {
+	
+	system("cls");
+
+
 	//Variable used for reading the user input
 	char option;
 	//Variable used for controlling the while loop
@@ -55,7 +82,7 @@ void homeMenu(Company &company)
 
 
 	//Clears the screen
-	system("cls");
+	
 	//Clears the keyboard buffer
 	fflush(stdin);
 	//Outputs the options to console
@@ -94,7 +121,7 @@ void homeMenu(Company &company)
 				//TO DO CODE
 				break;
 			case '4': system("cls");
-				 autocarrosDisplay(company);
+				autocarrosDisplay(company);
 				isRunning = false;
 				//TO DO CODE
 				break;
@@ -266,6 +293,7 @@ void condutoresHome(Company &company) {
 		rem_condutor(company);
 		break;
 	case 4: system("cls");
+		trabalhoCondutor(company);
 		
 		break;
 	case 0: system("cls"); homeMenu(company);
@@ -546,7 +574,199 @@ void adicionarCondutor(Company &company)
 }
 
 
+void trabalhoCondutor(Company &company) ////////incompleto
+{
+	int id, i;
+	vector<Bus> vectorAutocarros = company.getAutocarros();
+	vector<Driver> vectorDrivers = company.getDrivers();
+	cout << "Indique o ID do condutor :";
+	cin >> id;
+		while (true) {
+			if (!cin.fail()) {
+				i = ver_idc(id, vectorDrivers);
+				if (i == -1) {
+					cout << "ID nao encontrado tente novamente : "; cin >> id;
+				}
+				else {
+					break;
+				}
+			}
+			else {
+				cout << "Erro! Tenta novamente : ";
+				cin.clear();
+				cin.ignore(INT_MAX, '\n');
+				cin >> id;
+			}
+		}
+		
+		vectorDrivers = company.getDrivers();
+		if (vectorDrivers[i].getShifts().empty())
+		{
+			cout << vectorDrivers[i].getName() << " nao tem nenhum turno atribuido.\n\n\n";
+			
+			menuAtribui(company, i);
+		}
 
+		else {
+			cout << vectorDrivers[i].getName() << " tem os seguintes turnos : " << endl << endl << endl;
+			for (unsigned int u = 0; u < vectorDrivers[i].getShifts().size(); u++)
+			{
+				cout << "ID da linha onde se vai realizar : " << vectorDrivers[i].getShifts()[u].getBusLineId() << endl;
+				cout << "Ordem do autocarro : " << vectorDrivers[i].getShifts()[u].getBusOrderNumber() << endl;
+				cout << "Inicio do turno : " << vectorDrivers[i].getShifts()[u].getStartTime() << endl;
+				cout << "Fim do turno : " << vectorDrivers[i].getShifts()[u].getEndTime() << endl << endl;
+			}
+		}
+		cout << "\n\n\n";
+		menuAtribui(company, i);
+
+
+
+}
+
+void menuAtribui(Company &company , unsigned int indice)  //// incompletoooooo
+{
+	int opc;
+	cout << "[1]Atribuir Turno\n";
+	cout << "[0]Voltar\n";
+	cin >> opc;
+	while (opc != 1 && opc != 0) // ciclo utilizado para forçar o utilizador a escolher uma opcao valida 
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Opcao invalida , tente de novo : ";
+		cin >> opc;
+	}
+	if (opc == 0)
+	{
+		cout << "\n\n\n\n";
+		condutoresHome(company);
+	}
+	else {
+		system("cls");
+		atribuiTrabalho(company, indice);
+	}
+}
+
+void atribuiTrabalho(Company &company, unsigned int indice)
+{
+
+	vector<Bus> vectorAutocarros = company.getAutocarros();
+	vector<Driver> vectorDrivers = company.getDrivers();
+	vector<Shift> turnos = vectorDrivers[indice].getShifts();
+	vector<Line> vectorLines = company.getLines();
+	int tempo = vectorDrivers[indice].getMaxWeekWorkingTime();
+	tempo = tempo * 60;
+	int lineId, busorder, indiceAutocarro;
+	unsigned int  begin, end;
+	bool para = false;
+	for (unsigned int i = 0; i < vectorDrivers[indice].getShifts().size(); i++)
+	{
+		tempo -= (vectorDrivers[indice].getShifts()[i].getEndTime()) - (vectorDrivers[indice].getShifts()[i].getStartTime());
+	}
+	
+	cout << vectorDrivers[indice].getName() << " ainda pode trabalhar " << tempo << " min.\n";
+	if (tempo == 0)
+	{
+		cout << vectorDrivers[indice].getName() << " nao tem mais tempo disponivel para trabalhar!";
+
+	}
+	else {
+		cout << "Indique o ID da linha onde vai ser realizado o turno : ";
+		cin >> lineId;
+
+		while (true) // para encontrar o indice da linha correspondente ao id escolhido
+		{
+			for (unsigned int i = 0; i < vectorLines.size(); i++)
+			{
+				if (vectorLines[i].getId() == lineId)
+				{
+					para = true;
+				}
+			}
+			if (para)
+				break;
+			cout << "Erro! Tente um ID valido : ";
+			cin.clear();
+			cin.ignore(1000, '\n');
+			cin >> lineId;
+		}
+		cout << "Indique o numero de ordem do autocaro : ";
+		cin >> busorder;
+		para = false;
+		while (true)
+		{
+			for (unsigned int i = 0; i < vectorAutocarros.size(); i++) {
+				if (vectorAutocarros[i].getBusOrderInLine() == busorder && vectorAutocarros[i].getLineId() == lineId)
+				{
+					indiceAutocarro = i;
+					para = true;
+					break;
+				}
+			}
+			if (para)
+				break;
+			cout << "Erro! Tente um valor valido : ";
+			cin.clear();
+			cin.ignore(1000, '\n');
+			cin >> busorder;
+		}
+		vector<Shift> turnoAutocarro = vectorAutocarros[indiceAutocarro].getSchedule();
+
+		cout << "Indique o inicio do turno (em minutos) : ";
+		cin >> begin;
+		para = false;
+		while (true)
+		{
+			if (begin >= incioTime && begin < fimTime)
+			{
+				para = true;
+				break;
+			}
+			if (para)
+				break;
+			cout << "Erro! O valor esta fora dos intervalos estipulados do horario , tente novamente : ";
+			cin.clear();
+			cin.ignore(1000, '\n');
+			cin >> begin;
+
+
+		}
+
+		cout << "Indique o fim do turno (em minutos) : ";
+		cin >> end;
+		para = false;
+		while (true)
+		{
+			if ((end - begin) / 60.0 <= vectorDrivers[indice].getShiftMaxDuration() && end < fimTime && end >incioTime)
+			{
+				para = true;
+				break;
+			}
+			if (para)
+				break;
+			cout << "Erro! Nao pode exceder o tempo maximo de turno do condutor , tente novamente : ";
+			cin.clear();
+			cin.ignore(1000, '\n');
+			cin >> end;
+
+		}
+
+
+
+		turnos.push_back(Shift(lineId, vectorDrivers[indice].getId(), busorder, begin, end));
+		vectorDrivers[indice].setShifts(turnos);
+		turnoAutocarro.push_back(Shift(lineId, vectorDrivers[indice].getId(), busorder, begin, end));
+		vectorAutocarros[indiceAutocarro].setSchedule(turnoAutocarro);
+		company.setCondutores(vectorDrivers);
+		company.setAutocarros(vectorAutocarros);
+	}
+
+	cout << "\n\n\n";
+	menuAtribui(company, indice);
+
+
+}
 
 
 
@@ -568,7 +788,7 @@ void infoHome(Company &company)    // funcao que serve como base do menu informa
 	cout << "O horario da empresa semprarrolar funciona de segunda a sexta entre as 8h e as 23h." << endl;
 	cout << "Para um melhor funcionamento do programa, os dias sao vistos como intervalos de minutos :" << endl;
 	cout << "Segunda         Terca         Quarta         Quinta         Sexta" << endl;
-	cout << "[480,1379]      [1920,2819]   [3360,4259]    [4800,5699]    [6240,7140]" << endl;
+	cout << "[480,1379]      [1920,2819]   [3360,4259]    [4800,5699]    [6240,7140]" << endl << endl;
 	cout << "Digite a opcao que deseja : ";
 	cin >> opcao;
 	while (opcao != 1 && opcao != 2 && opcao != 3 && opcao != 4 && opcao != 0)   // loop utilizado para 'obrigar' o utilizador a escolher uma opcao valida
@@ -601,11 +821,9 @@ void horarioLinha(Company &company) // funcao que permite mostrar ao utilizador 
 {
 	int id, valor;
 	vector <Line> vectorLines = company.getLines();
-	const int horaI = 8;
-	int minutos = 0; // variaveis auxiliares
-	int minutosaux = 0;
-	int ajudahoras, ajudaminutos;
-	int ajuda;
+	int minutos = 0;
+	int horasaux;
+	int t, taux, min, minaux;
 	cout << "Indique o id da linha : ";
 	cin >> id;
 	bool para = false;
@@ -642,51 +860,40 @@ void horarioLinha(Company &company) // funcao que permite mostrar ao utilizador 
 		else cout << vectorLines[valor].getBusStops()[i] << "--->";
 	}
 	cout << endl << endl;
-	 
-	int horasaux = horaI;
-	int horasaux2 = horaI;
+
 	for (unsigned int i = 0; i < vectorLines[valor].getBusStops().size(); i++) // para escrever o nome das paragens;;
 	{
 		cout << i + 1 << " Paragem     ";
 	}
 	cout << endl;
-	while (horasaux2 <= 22) // para todas as viagens antes das 23 horas , é mostrado em forma de tabela as horas a que passa em cada paragem 
-	{
-		for (unsigned int i = 0; i < vectorLines[valor].getBusStops().size(); i++)
-		{
-			if (horasaux == 24)
-				horasaux = 0;
-			if (i == 0)
-				cout << setw(2) << setfill('0') << horasaux2 << ":" << setw(2) << setfill('0') << minutosaux << "         "; //formato das horas e minutos utilizando setw e setfill
-			else if (i == vectorLines[valor].getBusStops().size() - 1)
-				cout << setw(2) << setfill('0') << horasaux << ":" << setw(2) << setfill('0') << minutos;
-
-			else  cout << setw(2) << setfill('0') << horasaux << ":" << setw(2) << setfill('0') << minutos << "         ";
-			ajudahoras = horasaux;
-			ajudaminutos = minutos;
-			if (i < vectorLines[valor].getBusStops().size() - 1)
-			{
-				if (minutos + vectorLines[valor].getTimings()[i] >= 60) // quando passa dos 59 min acrescenta 1 hora as horas
-				{
-					horasaux += (minutos + vectorLines[valor].getTimings()[i]) / 60;
-					minutos = (minutos + vectorLines[valor].getTimings()[i]) % 60;
-				}
-				else minutos += vectorLines[valor].getTimings()[i];
+	taux = 8;
+	minaux = 0;
+	while (true) {
+		if ((minaux / 60) != 0) {
+			taux += minaux / 60;;
+			minaux = minaux % 60;
+		}
+		if ((taux == 23 && minaux > 0) || (taux > 23)) {
+			break;
+		}
+		cout << setw(2) << setfill('0') << taux << ":" << setw(2) << setfill('0') << minaux << "         ";
+		min = minaux;
+		t = taux;
+		for (unsigned int a = 0; a < vectorLines[valor].getTimings().size(); a++) {
+			min += vectorLines[valor].getTimings()[a];
+			if ((min / 60) != 0) {
+				t += min / 60;;
+				min = min % 60;
 			}
+			if (t >= 24) {
+				t = 0;
+			}
+			cout << setw(2) << setfill('0') << t << ":" << setw(2) << setfill('0') << min << "         ";
 		}
 		cout << endl;
-		minutosaux += vectorLines[valor].getFreq();
-
-		if (minutosaux >= 60)
-		{
-			horasaux2 = horasaux2 + (minutosaux / 60);
-			minutosaux = minutosaux % 60;
-		}
-		minutos = minutosaux;
-		horasaux = horasaux2;
-
+		minaux += vectorLines[valor].getFreq();
 	}
-	
+
 	cout << endl << endl << endl;
 	cout << "Sentido :" << endl;
 	for (int i = vectorLines[valor].getBusStops().size() - 1; i >= 0; i--) // para escrever o nome das paragens;;
@@ -695,59 +902,52 @@ void horarioLinha(Company &company) // funcao que permite mostrar ao utilizador 
 			cout << vectorLines[valor].getBusStops()[i] << endl << endl;
 		else cout << vectorLines[valor].getBusStops()[i] << "--->";
 	}
-
-	horasaux2 = horaI;
-	horasaux = horaI;
-	for (unsigned int i = 0; i <= vectorLines[valor].getTimings().size() - 1; i++) {
-		minutosaux += vectorLines[valor].getTimings()[i];
-		minutos += vectorLines[valor].getTimings()[i];
-		if (minutosaux >= 60) {
-			horasaux += minutosaux / 60;
-			horasaux2 += minutosaux / 60;
-			minutosaux = minutosaux % 60;
-			minutos = minutosaux % 60;
-		}
-	}
 	for (int i = vectorLines[valor].getBusStops().size() - 1; i >= 0; i--) // para escrever o nome das paragens;;
 	{
-		cout << vectorLines[valor].getBusStops().size() - i << " Paragem       ";
+		cout << vectorLines[valor].getBusStops().size() - i << " Paragem     ";
 	}
 	cout << endl;
-	
-	while (true)
-	{
-		if ((horasaux >= ajudahoras && minutosaux > ajudaminutos)|| (horasaux>ajudahoras))
+	taux = 8;
+	minaux = 0;
+	t = 8;
+	min = 0;
+	for (unsigned int a = 0; a < vectorLines[valor].getTimings().size(); a++) {
+		min += vectorLines[valor].getTimings()[a];
+	}
+	while (true) {
+		if ((min / 60) != 0) {
+			t += min / 60;;
+			min = min % 60;
+		}
+		if ((minaux / 60) != 0) {
+			taux += minaux / 60;;
+			minaux = minaux % 60;
+		}
+		if ((taux == 23 && minaux > 0) || (taux > 23)) {
 			break;
-		for (int i = vectorLines[valor].getBusStops().size() - 1; i >= 0; i--)
-		{
-			if (horasaux == 24)
-				horasaux = 0;
-			if (i == vectorLines[valor].getBusStops().size() - 1)
-				cout << setw(2) << setfill('0') << horasaux2 << ":" << setw(2) << setfill('0') << minutosaux << "           "; //formato das horas e minutos utilizando setw e setfill
-			else if (i == 0)
-				cout << setw(2) << setfill('0') << horasaux << ":" << setw(2) << setfill('0') << minutos;
-
-			else  cout << setw(2) << setfill('0') << horasaux << ":" << setw(2) << setfill('0') << minutos << "           ";
-			if (i > 0)
-			{
-				if (minutos + vectorLines[valor].getTimings()[i - 1] >= 60) // quando passa dos 59 min acrescenta 1 hora as horas
-				{
-					horasaux += (minutos + vectorLines[valor].getTimings()[i - 1]) / 60;
-					minutos = (minutos + vectorLines[valor].getTimings()[i - 1]) % 60;
-				}
-				else minutos += vectorLines[valor].getTimings()[i - 1];
+		}
+		if (t >= 24) {
+			t = 0;
+		}
+		cout << setw(2) << setfill('0') << t << ":" << setw(2) << setfill('0') << min ;
+		cout << "         ";
+		horasaux = t;
+		minutos = min;
+		for (int a = vectorLines[valor].getTimings().size() - 1; a >= 0; a--) {
+			minutos += vectorLines[valor].getTimings()[a];
+			if ((minutos / 60) != 0) {
+				horasaux += minutos / 60;;
+				minutos = minutos % 60;
 			}
+			if (t >= 24) {
+				t = 0;
+			}
+			cout << setw(2) << setfill('0') << horasaux << ":" << setw(2) << setfill('0') << minutos;
+			cout << "         ";
 		}
 		cout << endl;
-		minutosaux += vectorLines[valor].getFreq();
-
-		if (minutosaux >= 60)
-		{
-			horasaux2 += minutosaux / 60;
-			minutosaux = minutosaux % 60;
-		}
-		minutos = minutosaux;
-		horasaux = horasaux2;
+		min += vectorLines[valor].getFreq();
+		minaux += vectorLines[valor].getFreq();
 
 	}
 
@@ -833,7 +1033,7 @@ void HorarioParagem(Company &company) {
 					taux += minaux / 60;;
 					minaux = minaux % 60;
 				}
-				if ((taux > 22)) {
+				if ((taux > 23)||(taux==23&&minaux>0)) {
 					break;
 				}
 				if (t >= 24) {
@@ -894,7 +1094,8 @@ void linhasComParagem(Company &company) // funcao que pede ao utilizador uma par
 	vector<int> l = linhasMesmaParagem(paragem, company); // vector que guarda os diferentes ids , usando a funcao linhasMesmaParagem;
 	if (l.empty()) {
 		cout << "\nNao ha linhas com essa paragem!\n"
-			"Va ao menu principal e escolha gestao de linhas para melhor conhecimento.";
+			"Va ao menu principal e escolha gestao de linhas para melhor conhecimento.\n\n\n\n";
+		infoHome(company);
 		return;
 	}
 	cout << "IDs de todas as linhas que passam pela paragem selecionada : " << endl;
@@ -909,52 +1110,61 @@ void linhasComParagem(Company &company) // funcao que pede ao utilizador uma par
 
 }
 
-void percursoDuasParagens(Company &company) //incompleto
+void percursoDuasParagens(Company &company) //incompleto muito incompleto
+
 {
 	vector<Line> vectorLines = company.getLines();
 	string paragem1, paragem2;
+	int tempoViagem = 0, tempoViagem2 = 0;
+	vector <int> ajuda;
 	bool existe = false, existe1 = false;
-	int index, index2, indexparagem1, indexparagem2;
+	vector<int>index, index2;
+	int id, id2, indice, indice2, inaux, inaux2, idajuda, inajuda;
 	cout << "Indique o nome da primeira paragem : ";
 	cin.ignore();
 	getline(cin, paragem1);
-	
+
 	do {
 		paragem1 = Maximiza(paragem1);
 		for (unsigned int i = 0; i < vectorLines.size(); i++)
 		{
-			for (unsigned int u = 0; u < vectorLines[i].getBusStops().size(); u++)
+			for (unsigned int u = 0; u < vectorLines[i].getBusStops().size(); u++) {
 				if (Maximiza(vectorLines[i].getBusStops()[u]) == paragem1)
 				{
-					index = i;
-					indexparagem1 = u;
+					index.push_back(vectorLines[i].getId());
+					index.push_back(i);
+					index.push_back(u);
 					existe = true;
 				}
+			}
 		}
 		if (!existe)
 		{
-			
+
 			cout << "Erro! Tente uma paragem valida : ";
 			getline(cin, paragem1);
 		}
 	} while (!existe);
 
 	cout << "Indique o nome da segunda paragem : ";
-	cin.ignore();
+
 	getline(cin, paragem2);
 
 	do {
 		paragem2 = Maximiza(paragem2);
 		for (unsigned int i = 0; i < vectorLines.size(); i++)
 		{
-			for (unsigned int u = 0; u < vectorLines[i].getBusStops().size(); u++)
+			for (unsigned int u = 0; u < vectorLines[i].getBusStops().size(); u++) {
 				if (Maximiza(vectorLines[i].getBusStops()[u]) == paragem2)
 				{
-					index2 = i;
-					indexparagem2 = u;
+					index2.push_back(vectorLines[i].getId());
+					index2.push_back(i);
+					index2.push_back(u);
 					existe1 = true;
 				}
+			}
 		}
+		cin.clear();
 		if (!existe1)
 		{
 
@@ -962,31 +1172,151 @@ void percursoDuasParagens(Company &company) //incompleto
 			getline(cin, paragem2);
 		}
 	} while (!existe1);
-	
+
 
 	//// Caso as duas paragens estejam na mesma linha ////
+	for (unsigned int a = 0; a < index.size(); a++) {
+		id = index[a];  //id da linha da primeira paragem
+		a++;
+		indice = index[a];   //indice da linha da primeira paragem
+		a++;
+		inaux = index[a];   //indice da paragem na linha
+		for (unsigned int u = 0; u < index2.size(); u++) {
+			tempoViagem = 0;
+			tempoViagem2 = 0;
+			id2 = index2[u]; //id da linha da segunda paragem
+			u++;
+			indice2 = index2[u];  //indice da linha da segunda paragem
+			u++;
+			inaux2 = index2[u];  //indice da paragem na linha
+			if (id == id2)
+			{
+				if (inaux < inaux2)
+				{              //caso estejam na mesma linha e a primeira paragem antes da segunda
+					cout << "Percurso da linha :" << id << "\n";
+					for (unsigned int i = inaux; i <= inaux2; i++) //loop para dar cout do caminho a seguir
+					{
+						if (i == inaux2)
+							cout << vectorLines[indice].getBusStops()[i];
+						else cout << vectorLines[indice].getBusStops()[i] << "-->";
+					}
+					cout << endl;
+					for (unsigned int i = inaux; i < inaux2; i++) { //loop para calcular o tempo de viagem
+						tempoViagem += vectorLines[indice].getTimings()[i];
+					}
+					cout << "O tempo de viagem \x82 " << tempoViagem << " min." << "\n\n\n";
+					continue;
+				}
 
-	
-	if (index == index2)
-	{
-		cout << "O percurso masi rapido \x82 utilizando a mesma linha no sentido :" << endl;
-		for (unsigned int i = indexparagem1; i <= indexparagem2; i++)
-		{
-			if (i == indexparagem2)
-				cout << vectorLines[index].getBusStops()[i];
-			else cout << vectorLines[index].getBusStops()[i] << "-->";
+				else { //caso estejam na mesma linha mas a primeira paragem depois da segunda
+					cout << "Percurso da linha :" << id << "\n";
+					for (int i = inaux; i >= inaux2; i--) //loop para dar cout do sentido a seguir
+					{
+						if (i == inaux2)
+							cout << vectorLines[indice].getBusStops()[i];
+						else cout << vectorLines[indice].getBusStops()[i] << "-->";
+					}
+					cout << endl;
+					for (int i = inaux; i > inaux2; i--) { //loop para calcular tempo de viagem
+						tempoViagem += vectorLines[indice].getTimings()[i - 1];
+					}
+					cout << "O tempo de viagem \x82 " << tempoViagem << " min." << "\n\n\n";
+					continue;
+				}
+			}
+			tempoViagem = 0;   //recomeçar o tempo
+							   //caso sejam de paragens diferentes
+							   //dois loops que passam por todas as paragens da linha da primeira paragem
+							   //e que comparam todos os ids que essas paragens passam com o id da segunda paragem
+			for (int i = 0; i < vectorLines[indice].getBusStops().size(); i++) {
+				if (i == inaux) {
+					continue;
+				}
+				ajuda = linhasMesmaParagem(vectorLines[indice].getBusStops()[i], company);
+				for (unsigned int aux = 0; aux < ajuda.size(); aux++) {
+					if (ajuda[aux] == id && ajuda[aux + 1] == inaux) {
+						break;
+					}
+					if (id == id2) {
+						break;
+					}
+					if (ajuda[aux] == id2) {
+						cout << endl;
+						idajuda = ajuda[aux];
+						inajuda = ajuda[aux + 1];
+						if (inajuda == inaux2) {
+							aux++;
+							continue;
+						}
+						cout << "Apanhando duas linhas :\n";
+						if (inaux < i)//caso a paragem em comum entre linhas seja tenha menor indice que a primeira
+						{              //primeira parte do percurso
+							cout << "Percurso da linha :" << id << "\n";
+							for (unsigned int uau = inaux; uau <= i; uau++) //loop para dar cout da primeira parte do caminho a seguir
+							{
+								if (uau == i)
+									cout << vectorLines[indice].getBusStops()[uau];
+								else cout << vectorLines[indice].getBusStops()[uau] << "-->";
+							}
+							cout << endl;
+							for (unsigned int uau = inaux; uau < i; uau++) { //loop para calcular o tempo de viagem
+								tempoViagem += vectorLines[indice].getTimings()[uau];
+							}
+							cout << "Primeira parte do percurso demora : " << tempoViagem << " minutos.\n";
+						}
+						else { //caso o indice da comum seja menor que a segunda
+							cout << "Percurso da linha :" << id << "\n";
+							for (int uau = inaux; uau >= i; uau--) //loop para dar cout do sentido a seguir
+							{
+								if (uau == i)
+									cout << vectorLines[indice].getBusStops()[uau];
+								else cout << vectorLines[indice].getBusStops()[uau] << "-->";
+							}
+							cout << endl;
+							for (int uau = i; uau < inaux; uau++) { //loop para calcular tempo de viagem
+								tempoViagem += vectorLines[indice].getTimings()[uau];
+							}
+							cout << "Primeira parte do percurso demora : " << tempoViagem << " minutos.\n";
+						}
+						if (inaux2 > inajuda) //caso o indice da comum seja maior do que o da segunda
+						{              //primeira parte do percurso
+							cout << "Percurso da linha :" << id2 << "\n";
+							for (unsigned int uau = inajuda; uau <= inaux2; uau++) //loop para dar cout da primeira parte do caminho a seguir
+							{
+								if (uau == inaux2)
+									cout << vectorLines[indice2].getBusStops()[uau];
+								else cout << vectorLines[indice2].getBusStops()[uau] << "-->";
+							}
+							cout << endl;
+							for (unsigned int uau = inajuda; uau < inaux2; uau++) { //loop para calcular o tempo de viagem
+								tempoViagem2 += vectorLines[indice2].getTimings()[uau];
+							}
+							cout << "Segunda parte do percurso demora : " << tempoViagem2 << " minutos.\n";
+						}
+						else {//caso o indice da comum seja menor que o da segunda
+							cout << "Percurso da linha :" << id2 << "\n";
+							for (int uau = inajuda; uau >= inaux2; uau--) //loop para dar cout do sentido a seguir
+							{
+								if (uau == inaux2)
+									cout << vectorLines[indice2].getBusStops()[uau];
+								else cout << vectorLines[indice2].getBusStops()[uau] << "-->";
+							}
+							cout << endl;
+							for (int uau = inajuda; uau > inaux2; uau--) { //loop para calcular tempo de viagem
+								tempoViagem2 += vectorLines[indice2].getTimings()[uau - 1];
+							}
+							cout << "Segunda parte do percurso demora : " << tempoViagem2 << " minutos.\n";
+						}
+						cout << "Tempo total :" << tempoViagem + tempoViagem2 << " minutos.\n\n\n";
+					}
+					aux++;
+				}
+			}
 		}
 	}
 
-
-
-
-
-
-
-	
-	
-
+	cout << "\n";
+	infoHome(company);
 }
 
 
@@ -1000,23 +1330,82 @@ void percursoDuasParagens(Company &company) //incompleto
 
 /////////////////////////////////////////////Autocarros///////////////////////////////////////////////////////////////////
 
-void autocarrosDisplay(Company &company)      //incompleto
+void autocarrosDisplay(Company &company)      //incompletooooo
 {
+	int idlinha, indicelinha, i = 0, voltar;
+	bool para = false;
 	vector<Line> vectorLines = company.getLines();
+	vector <Bus> vectorAutocarros = company.getAutocarros();
+	
 	cout << "--------------- Autocarros SEMPRARROLAR ----------------" << endl;
-	for (unsigned int i = 0; i < vectorLines.size(); i++)
+	cout << "Indique o ID da linha :";
+	cin >> idlinha;
+	while (true) // para encontrar o indice da linha correspondente ao id escolhido
 	{
-		cout << "ID : " <<vectorLines[i].getId() << endl;
-		cout << "Tempo ida e volta : " << tempoIdaVolta(vectorLines[i]) << endl;
-		cout << "Numero de autocarros : " << numeroAutocarrosLinha(tempoIdaVolta(vectorLines[i]), vectorLines[i]) << endl;
-
-
+		for (unsigned int i = 0; i < vectorLines.size(); i++)
+		{
+			if (vectorLines[i].getId() == idlinha)
+			{
+				indicelinha = i;
+				para = true;
+			}
+		}
+		if (para)
+			break;
+		cout << "Erro! Tente um ID valido : ";
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cin >> idlinha;
+	}
+	cout << endl;
+	cout << "ID : " << "--" << idlinha << "--" << endl;
+	cout << "Tempo de viagem (ida e volta) : " << tempoIdaVolta(vectorLines[indicelinha]) << " min\n\n";
+	cout << "||||||||||||||||||||||||||AUTOCARROS||||||||||||||||||||||||" << endl << endl << endl;
+	while (vectorAutocarros[i].getLineId() == idlinha)
+	{
+		cout << "AUTOCARRO " << i + 1 << endl;
+		if (vectorAutocarros[i].getSchedule().empty())
+		{
+			cout << "-neste momento o autocarro esta fora de servico-" << endl;
+		}
+		else {
+			for (unsigned int u = 0; u < vectorAutocarros[i].getSchedule().size(); u++)
+			{
+				cout << "----------------Turno-----------------\n";
+				cout << "ID Condutor : " << vectorAutocarros[i].getSchedule()[u].getDriverId() << "\n";
+				cout << "Inicio : " << vectorAutocarros[i].getSchedule()[u].getStartTime() << " min\n";
+				cout << "Fim : " << vectorAutocarros[i].getSchedule()[u].getEndTime() << " min\n";
+				cout << "--------------------------------------\n";
+			}
+		}
+		i++;
 	}
 
-
+	cout << "\n\n\n";
+	cout << "[0]Para voltar ao inicio : ";
+	cin >> voltar;
+	while (voltar !=0)   // loop utilizado para 'obrigar' o utilizador a escolher uma opcao valida
+	{
+		cin.clear();
+		cin.ignore(1000, '\n');
+		cout << "Erro! Tente de novo : ";
+		cin >> voltar;
+	}
+	homeMenu(company);
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
 
 int tempoIdaVolta(Line linha)
 {
@@ -1072,7 +1461,7 @@ int main() {
 
 	Company object("SEMPRARROLAR", drivers, lines);
 
-	homeMenu(object);
+	beforeMenu(object);
 
 	
 	return 0;
