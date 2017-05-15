@@ -3,3 +3,4 @@
 505 ; 30 ; Matosinhos, Sete Bicas, Rotunda dos Produtos Estrela, Senhora da Hora; 40, 30, 45
 506 ; 15 ; Ribeira, Fluvial, Foz, Matosinhos, Feup; 25, 80, 30, 10
 508 ; 10 ; Carmo, Alfandega, Foz; 25, 30
+509 ; 10 ; Carmo, Alfandega, Fluvial; 25, 30

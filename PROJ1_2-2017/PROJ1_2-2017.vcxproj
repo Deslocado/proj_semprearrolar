@@ -24,6 +24,7 @@
     <ClCompile Include="Driver.cpp" />
     <ClCompile Include="Line.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="semana.cpp" />
     <ClCompile Include="Shift.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +32,7 @@
     <ClInclude Include="Company.h" />
     <ClInclude Include="Driver.h" />
     <ClInclude Include="Line.h" />
+    <ClInclude Include="semana.h" />
     <ClInclude Include="Shift.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

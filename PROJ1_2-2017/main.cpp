@@ -50,8 +50,7 @@ void homeMenu(Company &company);
 void menuAtribui(Company &company, unsigned int indice);
 void atribuiTrabalho(Company &company, unsigned int indice);
 //////////////////////////////////
-unsigned int incioTime = 480;
-unsigned int fimTime = 7140;
+
 
 //////////////////////////////////
 
@@ -66,7 +65,37 @@ void beforeMenu(Company &company)
 			vectorAutocarros.push_back(Bus(u, vectorLines[i].getId()));
 
 	}
+	vector<semana> todosDias;
+	string dia;
+	int inicio, fim;
+	for (unsigned int i = 0; i < 5; i++)
+	{
+		switch (i) {
+		case 0: dia = "Segunda";
+			inicio = 480;
+			fim = 1380;
+			break;
+		case 1: dia = "Terca";
+			inicio = 1920;
+			fim = 2820;
+			break;
+		case 2: dia = "Quarta";
+			inicio = 3360;
+			fim = 4260;
+			break;
+		case 3: dia = "Quinta";
+			inicio = 4800;
+			fim = 5700;
+			break;
+		case 4: dia = "Sexta";
+			inicio = 6240;
+			fim = 7140;
+			break;
+		}
+		todosDias.push_back(semana(dia, inicio, fim));
+	}
 	company.setAutocarros(vectorAutocarros);
+	company.setWeek(todosDias);
 	homeMenu(company);
 }
 void homeMenu(Company &company)
@@ -577,6 +606,8 @@ void adicionarCondutor(Company &company)
 void trabalhoCondutor(Company &company) ////////incompleto
 {
 	int id, i;
+	string dia;
+	vector<semana> todosDias = company.getWeek();
 	vector<Bus> vectorAutocarros = company.getAutocarros();
 	vector<Driver> vectorDrivers = company.getDrivers();
 	cout << "Indique o ID do condutor :";
@@ -609,10 +640,17 @@ void trabalhoCondutor(Company &company) ////////incompleto
 
 		else {
 			cout << vectorDrivers[i].getName() << " tem os seguintes turnos : " << endl << endl << endl;
+			
 			for (unsigned int u = 0; u < vectorDrivers[i].getShifts().size(); u++)
 			{
+				for (unsigned int d = 0; d < todosDias.size(); d++)
+				{
+					if (vectorDrivers[i].getShifts()[u].getStartTime() >= todosDias[d].getInicioDia() && vectorDrivers[i].getShifts()[u].getStartTime() < todosDias[d].getFimDia())
+						dia = todosDias[d].getDia();
+				}
 				cout << "ID da linha onde se vai realizar : " << vectorDrivers[i].getShifts()[u].getBusLineId() << endl;
 				cout << "Ordem do autocarro : " << vectorDrivers[i].getShifts()[u].getBusOrderNumber() << endl;
+				cout << "Dia : " << dia << endl;
 				cout << "Inicio do turno : " << vectorDrivers[i].getShifts()[u].getStartTime() << endl;
 				cout << "Fim do turno : " << vectorDrivers[i].getShifts()[u].getEndTime() << endl << endl;
 			}
@@ -650,7 +688,7 @@ void menuAtribui(Company &company , unsigned int indice)  //// incompletoooooo
 
 void atribuiTrabalho(Company &company, unsigned int indice)
 {
-
+	vector<semana> todosDias = company.getWeek();
 	vector<Bus> vectorAutocarros = company.getAutocarros();
 	vector<Driver> vectorDrivers = company.getDrivers();
 	vector<Shift> turnos = vectorDrivers[indice].getShifts();
@@ -664,7 +702,10 @@ void atribuiTrabalho(Company &company, unsigned int indice)
 	{
 		tempo -= (vectorDrivers[indice].getShifts()[i].getEndTime()) - (vectorDrivers[indice].getShifts()[i].getStartTime());
 	}
-	
+	cout << "O horario da empresa semprarrolar funciona de segunda a sexta entre as 8h e as 23h." << endl;
+	cout << "Para um melhor funcionamento do programa, os dias sao vistos como intervalos de minutos :" << endl;
+	cout << "Segunda         Terca         Quarta         Quinta         Sexta" << endl;
+	cout << "[480,1380]      [1920,2820]   [3360,4260]    [4800,5700]    [6240,7140]" << endl << endl;
 	cout << vectorDrivers[indice].getName() << " ainda pode trabalhar " << tempo << " min.\n";
 	if (tempo == 0)
 	{
@@ -716,12 +757,16 @@ void atribuiTrabalho(Company &company, unsigned int indice)
 		cout << "Indique o inicio do turno (em minutos) : ";
 		cin >> begin;
 		para = false;
+		int indiceDia;
 		while (true)
 		{
-			if (begin >= incioTime && begin < fimTime)
-			{
-				para = true;
-				break;
+			for (unsigned int i = 0; i < todosDias.size(); i++) {
+				if (begin >= todosDias[i].getInicioDia() && begin < todosDias[i].getFimDia()) //para ver so o valor se enquadra nos intervalos estipulados
+				{
+					indiceDia = i;
+					para = true;
+					break;
+				}
 			}
 			if (para)
 				break;
@@ -738,11 +783,13 @@ void atribuiTrabalho(Company &company, unsigned int indice)
 		para = false;
 		while (true)
 		{
-			if ((end - begin) / 60.0 <= vectorDrivers[indice].getShiftMaxDuration() && end < fimTime && end >incioTime)
+
+			if ((end - begin) / 60.0 <= vectorDrivers[indice].getShiftMaxDuration() && end <= todosDias[indiceDia].getFimDia() && end > todosDias[indiceDia].getInicioDia())
 			{
 				para = true;
 				break;
 			}
+
 			if (para)
 				break;
 			cout << "Erro! Nao pode exceder o tempo maximo de turno do condutor , tente novamente : ";
@@ -764,8 +811,6 @@ void atribuiTrabalho(Company &company, unsigned int indice)
 
 	cout << "\n\n\n";
 	menuAtribui(company, indice);
-
-
 }
 
 
@@ -786,9 +831,6 @@ void infoHome(Company &company)    // funcao que serve como base do menu informa
 	cout << "[4]Determinar percurso entre duas quaisquer paragens" << endl;
 	cout << "[0]Voltar ao menu" << endl << endl;
 	cout << "O horario da empresa semprarrolar funciona de segunda a sexta entre as 8h e as 23h." << endl;
-	cout << "Para um melhor funcionamento do programa, os dias sao vistos como intervalos de minutos :" << endl;
-	cout << "Segunda         Terca         Quarta         Quinta         Sexta" << endl;
-	cout << "[480,1379]      [1920,2819]   [3360,4259]    [4800,5699]    [6240,7140]" << endl << endl;
 	cout << "Digite a opcao que deseja : ";
 	cin >> opcao;
 	while (opcao != 1 && opcao != 2 && opcao != 3 && opcao != 4 && opcao != 0)   // loop utilizado para 'obrigar' o utilizador a escolher uma opcao valida
@@ -1110,9 +1152,10 @@ void linhasComParagem(Company &company) // funcao que pede ao utilizador uma par
 
 }
 
-void percursoDuasParagens(Company &company) //incompleto muito incompleto
+void percursoDuasParagens(Company &company) 
 
 {
+	bool ligacao = false;
 	vector<Line> vectorLines = company.getLines();
 	string paragem1, paragem2;
 	int tempoViagem = 0, tempoViagem2 = 0;
@@ -1205,6 +1248,7 @@ void percursoDuasParagens(Company &company) //incompleto muito incompleto
 						tempoViagem += vectorLines[indice].getTimings()[i];
 					}
 					cout << "O tempo de viagem \x82 " << tempoViagem << " min." << "\n\n\n";
+					ligacao = true;
 					continue;
 				}
 
@@ -1221,6 +1265,7 @@ void percursoDuasParagens(Company &company) //incompleto muito incompleto
 						tempoViagem += vectorLines[indice].getTimings()[i - 1];
 					}
 					cout << "O tempo de viagem \x82 " << tempoViagem << " min." << "\n\n\n";
+					ligacao = true;
 					continue;
 				}
 			}
@@ -1308,11 +1353,17 @@ void percursoDuasParagens(Company &company) //incompleto muito incompleto
 							cout << "Segunda parte do percurso demora : " << tempoViagem2 << " minutos.\n";
 						}
 						cout << "Tempo total :" << tempoViagem + tempoViagem2 << " minutos.\n\n\n";
+						ligacao = true;
 					}
 					aux++;
 				}
 			}
 		}
+	}
+
+	if (!ligacao) {
+		cout << "\n\nNao encontrou ligacao possivel, isto pode ser porque apenas \x82 possivel calcular tempos entre paragens"
+			" da mesma linha ou no maximo de linhas diferentes que apenas se muda de linha uma vez.\n\n";
 	}
 
 	cout << "\n";
@@ -1366,7 +1417,7 @@ void autocarrosDisplay(Company &company)      //incompletooooo
 		cout << "AUTOCARRO " << i + 1 << endl;
 		if (vectorAutocarros[i].getSchedule().empty())
 		{
-			cout << "-neste momento o autocarro esta fora de servico-" << endl;
+			cout << "-neste momento o autocarro nao tem nenhum servico-" << endl;
 		}
 		else {
 			for (unsigned int u = 0; u < vectorAutocarros[i].getSchedule().size(); u++)

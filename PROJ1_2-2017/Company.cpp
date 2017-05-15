@@ -66,6 +66,10 @@ vector<Driver> Company::getDrivers() const
 vector<Bus> Company::getAutocarros() const {
 	return autocarros;
 }
+vector<semana> Company::getWeek() const
+{
+	return week;
+}
 ///////////////////////////////
 string Company::getNome() const {
 	return nome;
@@ -87,6 +91,10 @@ void Company::setLinhas(vector<Line> vector)
 void Company::setAutocarros(vector<Bus> vector)
 {
 	autocarros = vector;
+}
+void Company::setWeek(vector<semana> vector)
+{
+	week = vector;
 }
 ////////////////////////////
 // outros metodos
